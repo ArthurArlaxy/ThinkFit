@@ -5,4 +5,4 @@ const clientController = new ClientController()
 
 export const router = express.Router()
 
-router.get("/", clientController.getPerfil)
+router.get("/users/:id", clientController.getPerfil)
