@@ -1,16 +1,105 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               Int        @id @default(autoincrement())
+  name             String     @db.VarChar(255)
+  role             UserRoles  @default(gymMember)
+  email            String     @unique @db.VarChar(255)
+  password         String     @db.VarChar(255)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  chats            ChatUser[]
+  messages         Message[]
+  assignedTickets  Ticket[]   @relation("AssignedTickets")
+  createdTickets   Ticket[]   @relation("CreatedTickets")
+  createdWorkouts  Workout[]  @relation("CreatedWorkouts")
+  receivedWorkouts Workout[]  @relation("ReceivedWorkouts")
+}
+
+model Workout {
+  id           Int           @id @default(autoincrement())
+  name         String        @db.VarChar(200)
+  description  String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  createdById  Int
+  createdForId Int
+  exercises    ExerciseSet[]
+  createdBy    User          @relation("CreatedWorkouts", fields: [createdById], references: [id])
+  createdFor   User          @relation("ReceivedWorkouts", fields: [createdForId], references: [id])
+}
+
+model ExerciseSet {
+  id         Int      @id @default(autoincrement())
+  minReps    Int
+  maxReps    Int
+  sets       Int
+  weight     Decimal  @db.Decimal(6, 2)
+  order      Int
+  workoutId  Int
+  exerciseId Int
+  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+  workout    Workout  @relation(fields: [workoutId], references: [id])
+}
+
+model Exercise {
+  id            Int           @id @default(autoincrement())
+  name          String
+  imageUrl      String?
+  primaryMuscle String
+  sets          ExerciseSet[]
+}
+
+model Chat {
+  id        Int        @id @default(autoincrement())
+  name      String     @db.VarChar(255)
+  type      ChatType
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  users     ChatUser[]
+  message   Message[]
+}
+
+model ChatUser {
+  userId Int
+  chatId Int
+  chat   Chat @relation(fields: [chatId], references: [id])
+  user   User @relation(fields: [userId], references: [id])
+
+  @@id([userId, chatId])
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  chatId    Int
+  userId    Int
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  chat      Chat     @relation(fields: [chatId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Ticket {
+  id           Int            @id @default(autoincrement())
+  title        String         @db.VarChar(255)
+  description  String
+  type         TicketType     @default(question)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  status       TicketStatus   @default(open)
+  priority     TicketPriority @default(low)
+  createdById  Int
+  assignedToId Int?
+  assignedTo   User?          @relation("AssignedTickets", fields: [assignedToId], references: [id])
+  createdBy    User           @relation("CreatedTickets", fields: [createdById], references: [id])
 }
 
 enum UserRoles {
@@ -40,113 +129,4 @@ enum TicketPriority {
   low
   medium
   high
-}
-
-model User {
-  id        Int       @id @default(autoincrement())
-  name      String    @db.VarChar(255)
-  role      UserRoles @default(gymMember)
-  email     String    @unique @db.VarChar(255)
-  password  String    @db.VarChar(255)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-
-  createdWorkouts  Workout[] @relation("CreatedWorkouts")
-  receivedWorkouts Workout[] @relation("ReceivedWorkouts")
-
-  createdTickets  Ticket[] @relation("CreatedTickets")
-  assignedTickets Ticket[] @relation("AssignedTickets")
-
-  chats    ChatUser[]
-  messages Message[]
-}
-
-model Workout {
-  id          Int      @id @default(autoincrement())
-  name        String   @db.VarChar(200)
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  createdById  Int
-  createdForId Int
-
-  exercises ExerciseSet[]
-
-  createdBy  User @relation("CreatedWorkouts", fields: [createdById], references: [id])
-  createdFor User @relation("ReceivedWorkouts", fields: [createdForId], references: [id])
-}
-
-model ExerciseSet {
-  id      Int     @id @default(autoincrement())
-  minReps Int
-  maxReps Int
-  sets    Int
-  weight  Decimal @db.Decimal(6, 2)
-  order   Int
-
-  workoutId  Int
-  exerciseId Int
-
-  workout  Workout  @relation(fields: [workoutId], references: [id])
-  exercise Exercise @relation(fields: [exerciseId], references: [id])
-}
-
-model Exercise {
-  id            Int     @id @default(autoincrement())
-  name          String
-  imageUrl      String?
-  primaryMuscle String
-
-  sets ExerciseSet[]
-}
-
-model Chat {
-  id        Int      @id @default(autoincrement())
-  name      String   @db.VarChar(255)
-  type      ChatType
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  users   ChatUser[]
-  message Message[]
-}
-
-model ChatUser {
-  userId Int
-  chatId Int
-
-  user User @relation(fields: [userId], references: [id])
-  chat Chat @relation(fields: [chatId], references: [id])
-
-  @@id([userId, chatId])
-}
-
-model Message {
-  id        Int      @id @default(autoincrement())
-  chatId    Int
-  userId    Int
-  content   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id])
-  chat Chat @relation(fields: [chatId], references: [id])
-}
-
-model Ticket {
-  id          Int            @id @default(autoincrement())
-  title       String         @db.VarChar(255)
-  description String
-  type        TicketType     @default(question)
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-  status      TicketStatus   @default(open)
-  priority    TicketPriority @default(low)
-
-  createdById  Int
-  assignedToId Int?
-
-  createdBy  User @relation("CreatedTickets", fields: [createdById], references: [id])
-  assignedTo User? @relation("AssignedTickets", fields: [assignedToId], references: [id])
 }
