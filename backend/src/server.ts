@@ -6,7 +6,7 @@ import { ErrorHandler } from "./middlewares/ErrorMiddleware.js";
 const app =  express()
 
 app.use(express.json())
-app.use(router)
+app.use("/api", router)
 app.use(ErrorHandler)
 
 const PORT = process.env.PORT

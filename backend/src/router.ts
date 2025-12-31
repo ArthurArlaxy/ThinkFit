@@ -1,8 +1,6 @@
 import express from "express"
-import { ClientController } from "./controllers/ClientController.js"
-
-const clientController = new ClientController()
+import { userController } from "./container"
 
 export const router = express.Router()
 
-router.get("/users/:id", clientController.getPerfil)
+router.get("/users", userController.getUsers )
