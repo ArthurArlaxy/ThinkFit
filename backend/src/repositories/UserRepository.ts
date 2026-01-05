@@ -1,4 +1,4 @@
-import { User } from "@prisma/client"
+import {  User, Workout } from "@prisma/client"
 
 export type UserRoles = "admin" | "personal" | "gymMember"
 
@@ -26,11 +26,16 @@ export interface FindUserParams{
   offset?: number
 }
 
+export interface getUserTraning {
+  user: User
+  exercises: Workout[]
+}
+
 export interface UserRepository{
     getUsers: (params: FindUserParams) => Promise<User[]>
     count: (params: UserWhereParams ) => Promise<number>  
-    // getUserById: (id: number) => Promise<User>
-    // createUser: (Attributes: CreateUserAttributes) => Promise<User>
-    // updatedUser: (id: number, Attributes: Partial<CreateUserAttributes>) => Promise<User>
-    // deleteUser: (id: number) => Promise<User>
+    getUserById: (id: number) => Promise<getUserTraning | undefined>
+    createUser: (Attributes: CreateUserAttributes) => Promise<User>
+    updatedUser: (id: number, Attributes: Partial<CreateUserAttributes>) => Promise<User>
+    deleteUser: (id: number) => Promise<User>
 }   
