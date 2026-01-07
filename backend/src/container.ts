@@ -22,6 +22,9 @@ import { MessageController } from "./controllers/MessageController";
 import { MessagePrismaRepository } from "./repositories/prisma/MessagePrisma";
 import { MessageService } from "./service/MessageService";
 
+import { AuthController } from "./controllers/AuthController";
+import { tokenService } from "./service/TokenService";
+
 import { TicketController } from "./controllers/TicketController";
 import { TicketPrismaRepository } from "./repositories/prisma/TicketPrisma";
 import { TicketService } from "./service/TicketService";
@@ -52,3 +55,6 @@ export const exerciseSetController = new ExerciseSetController(exerciseSetServic
 export const chatController = new ChatController(chatService)
 export const messageController = new MessageController(messageService)
 export const ticketController = new TicketController(ticketService)
+
+// Auth
+export const authController = new AuthController(userService)

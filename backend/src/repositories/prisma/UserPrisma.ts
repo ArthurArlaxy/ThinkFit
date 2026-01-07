@@ -3,7 +3,7 @@ import { prisma } from "../../database";
 import { CreateUserAttributes, FindUserParams, getUserTraning, UserRepository, UserWhereParams } from "../UserRepository";
 
 
-export class UserPrismaRepository implements UserRepository {
+export class UserPrismaRepository implements UserRepository { 
     getUsers(params: FindUserParams): Promise<User[]> {
         return prisma.user.findMany({
             where: {
@@ -57,6 +57,16 @@ export class UserPrismaRepository implements UserRepository {
             user,
             exercises
         };
+    }
+
+    async findByEmail(email: string): Promise<User | null> {
+        const user = prisma.user.findUnique({ where: { email } })
+
+        if(!user){
+            return null
+        }
+
+        return user
     }
 
     createUser(attributes: CreateUserAttributes): Promise<User> {

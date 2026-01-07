@@ -35,6 +35,7 @@ export interface UserRepository{
     getUsers: (params: FindUserParams) => Promise<User[]>
     count: (params: UserWhereParams ) => Promise<number>  
     getUserById: (id: number) => Promise<getUserTraning | undefined>
+    findByEmail: (email: string) => Promise<User | null>
     createUser: (Attributes: CreateUserAttributes) => Promise<User>
     updatedUser: (id: number, Attributes: Partial<CreateUserAttributes>) => Promise<User>
     deleteUser: (id: number) => Promise<User>

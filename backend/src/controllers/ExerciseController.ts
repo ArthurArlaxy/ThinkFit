@@ -8,7 +8,8 @@ export class ExerciseController {
     getExercises: Handler = async (req, res, next) => {
         try {
             const params = GetExerciseRequestSchema.parse(req.query)
-            const result = await this.exerciseService.getAllWithPagination(params as any)
+            const mapped = { name: params.name, page: params.page, pageSize: params.pageSize, sortBy: params.sortBy, order: params.order }
+            const result = await this.exerciseService.getAllWithPagination(mapped)
             res.json(result)
         } catch (error) { next(error) }
     }

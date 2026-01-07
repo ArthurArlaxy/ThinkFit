@@ -1,6 +1,8 @@
 import { Handler } from "express";
 import { CreateMessageRequestSchema, GetMessageRequestSchema, UpdateMessageRequestSchema } from "../schema/MessageRequestSchema";
 import { MessageService } from "../service/MessageService";
+import { HttpError } from "../errors/HttpError";
+import type { CreateMessageAttributes, FindParams as MessageFindParams } from "../repositories/MessageRepository";
 
 export class MessageController {
     constructor(private readonly messageService: MessageService) { }
@@ -8,7 +10,8 @@ export class MessageController {
     getMessages: Handler = async (req, res, next) => {
         try {
             const params = GetMessageRequestSchema.parse(req.query)
-            const result = await this.messageService.getAllWithPagination(params as any)
+            const mapped: MessageFindParams = { chatId: params.chatId, userId: params.userId, page: params.page, pageSize: params.pageSize }
+            const result = await this.messageService.getAllWithPagination(mapped)
             res.json(result)
         } catch (error) { next(error) }
     }
@@ -21,10 +24,12 @@ export class MessageController {
         } catch (error) { next(error) }
     }
 
-    createMessage: Handler = async (req, res, next) => {
+    createMessage: Handler = async (req: any, res, next) => {
         try {
             const attributes = CreateMessageRequestSchema.parse(req.body)
-            const created = await this.messageService.createMessage(attributes)
+            if (!req.user || !req.user.id) throw new HttpError(401, "Unauthorized")
+            const withUser: CreateMessageAttributes = { chatId: attributes.chatId, content: attributes.content, userId: req.user.id }
+            const created = await this.messageService.createMessage(withUser)
             res.json(created)
         } catch (error) { next(error) }
     }

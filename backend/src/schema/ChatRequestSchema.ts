@@ -7,12 +7,20 @@ export const GetChatRequestSchema = z.object({
     pageSize: z.number().optional()
 })
 
-export const CreateChatRequestSchema = z.object({
-    name: z.string(),
-    type: z.enum(["group","private"])
-})
+export const CreateChatRequestSchema = z.discriminatedUnion("type", [
+    z.object({
+        type: z.literal("private"),
+        name: z.string(),
+        memberId: z.number()
+    }),
+    z.object({
+        type: z.literal("group"),
+        name: z.string(),
+        membersId: z.array(z.number()).min(1)
+    })
+])
 
 export const UpdateChatRequestSchema = z.object({
     name: z.string().optional(),
-    type: z.enum(["group","private"]).optional()
+    type: z.literal("group").optional()
 })

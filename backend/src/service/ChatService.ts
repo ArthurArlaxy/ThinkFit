@@ -1,5 +1,5 @@
 import { HttpError } from "../errors/HttpError"
-import { ChatRepository, CreateChatAttributes, FindParams } from "../repositories/ChatRepository"
+import { ChatRepository, CreateChatAttributes, CreateChatGroupAttributes, FindParams, FindUserChatsParams } from "../repositories/ChatRepository"
 
 export class ChatService {
     constructor(private readonly chatRepository: ChatRepository) { }
@@ -22,6 +22,24 @@ export class ChatService {
         }
     }
 
+    async getAllUserChatWithPagination(params: FindUserChatsParams) {
+        const { userId, name, page = 1, pageSize = 10 } = params
+        const limit = Number(pageSize)
+
+        const chats = await this.chatRepository.getUserChats({ userId, name, page, pageSize, type: params.type })
+        const total = await this.chatRepository.count({ userId, name, type: params.type })
+
+        return {
+            chats,
+            meta: {
+                page: Number(page),
+                pageSize: limit,
+                total,
+                totalPages: Math.ceil(total / limit)
+            }
+        }
+    }
+
     async getChat(id: number) {
         const chat = await this.chatRepository.getChatById(id)
         if (!chat) throw new HttpError(404, "Chat not found")
@@ -32,7 +50,7 @@ export class ChatService {
         return this.chatRepository.createChat(attributes)
     }
 
-    async updateChat(id: number, attributes: Partial<CreateChatAttributes>) {
+    async updateChat(id: number, attributes: Partial<CreateChatGroupAttributes>) {
         return this.chatRepository.updatedChat(id, attributes)
     }
 

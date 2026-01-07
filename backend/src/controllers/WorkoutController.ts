@@ -8,7 +8,8 @@ export class WorkoutController {
     getWorkouts: Handler = async (req, res, next) => {
         try {
             const params = GetWorkoutRequestSchema.parse(req.query)
-            const result = await this.workoutService.getAllWithPagination(params as any)
+            const mapped = { name: params.name, page: params.page, pageSize: params.pageSize, sortBy: params.sortBy, order: params.order }
+            const result = await this.workoutService.getAllWithPagination(mapped)
             res.json(result)
         } catch (error) { next(error) }
     }

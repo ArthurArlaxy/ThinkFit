@@ -70,4 +70,10 @@ export class UserService {
 
         return deleteUser
     }
+
+    async getUserByEmail(email: string) {
+        // Retorna o usuário ou null
+        const user = await this.userRepository.findByEmail(email)
+        return user
+    }
 }

@@ -8,7 +8,8 @@ export class TicketController {
     getTickets: Handler = async (req, res, next) => {
         try {
             const params = GetTicketRequestSchema.parse(req.query)
-            const result = await this.ticketService.getAllWithPagination(params as any)
+            const mapped = { title: params.title, page: params.page, pageSize: params.pageSize, type: params.type, status: params.status }
+            const result = await this.ticketService.getAllWithPagination(mapped)
             res.json(result)
         } catch (error) { next(error) }
     }

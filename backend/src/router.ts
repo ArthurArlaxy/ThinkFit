@@ -1,5 +1,6 @@
 import express from "express"
-import { userController, workoutController, exerciseController, exerciseSetController, chatController, messageController, ticketController } from "./container"
+import { userController, workoutController, exerciseController, exerciseSetController, chatController, messageController, ticketController, authController } from "./container"
+import { AuthMiddleware } from "./middlewares/AuthMiddleware"
 
 export const router = express.Router()
 
@@ -33,17 +34,21 @@ router.delete("/exercise-sets/:id", exerciseSetController.deleteExerciseSet)
 
 // Chats
 router.get("/chats", chatController.getChats)
-router.post("/chats", chatController.createChat)
+router.post("/chats", AuthMiddleware, chatController.createChat)
 router.get("/chats/:id", chatController.getChat)
+router.get("/users/:userId/chats", AuthMiddleware, chatController.getUserChats)
 router.put("/chats/:id", chatController.updateChat)
 router.delete("/chats/:id", chatController.deleteChat)
 
 // Messages
 router.get("/messages", messageController.getMessages)
-router.post("/messages", messageController.createMessage)
+router.post("/messages", AuthMiddleware, messageController.createMessage)
 router.get("/messages/:id", messageController.getMessage)
 router.put("/messages/:id", messageController.updateMessage)
 router.delete("/messages/:id", messageController.deleteMessage)
+
+// Auth
+router.post("/auth/login", authController.login)
 
 // Tickets
 router.get("/tickets", ticketController.getTickets)

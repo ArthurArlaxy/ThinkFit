@@ -70,6 +70,7 @@ model Chat {
 model ChatUser {
   userId Int
   chatId Int
+  isAdmin Boolean
   chat   Chat @relation(fields: [chatId], references: [id])
   user   User @relation(fields: [userId], references: [id])
 
@@ -83,6 +84,7 @@ model Message {
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  readByUser Boolean @default(false)
   chat      Chat     @relation(fields: [chatId], references: [id])
   user      User     @relation(fields: [userId], references: [id])
 }

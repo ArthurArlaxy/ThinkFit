@@ -9,7 +9,6 @@ export const GetMessageRequestSchema = z.object({
 
 export const CreateMessageRequestSchema = z.object({
     chatId: z.number(),
-    userId: z.number(),
     content: z.string()
 })
 
