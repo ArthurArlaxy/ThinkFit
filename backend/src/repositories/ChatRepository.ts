@@ -19,7 +19,6 @@ export interface FindUserChatsParams {
 
 export interface CreateChatPrivateAttributes{
     userId: number
-    name: string
     type: "private"
     memberId: number
 }

@@ -10,7 +10,6 @@ export const GetChatRequestSchema = z.object({
 export const CreateChatRequestSchema = z.discriminatedUnion("type", [
     z.object({
         type: z.literal("private"),
-        name: z.string(),
         memberId: z.number()
     }),
     z.object({

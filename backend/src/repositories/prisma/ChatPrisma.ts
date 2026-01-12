@@ -74,7 +74,7 @@ export class ChatPrismaRepository implements ChatRepository {
             if (existing) return existing as Chat
 
             // Cria novo chat e associa os dois usuários
-            const chat = await prisma.chat.create({ data: { name: typedAttributes.name, type: typedAttributes.type } })
+            const chat = await prisma.chat.create({ data: { name:"", type: typedAttributes.type } })
             await prisma.chatUser.createMany({ data: [
                 { userId: typedAttributes.userId, chatId: chat.id, isAdmin: false },
                 { userId: typedAttributes.memberId, chatId: chat.id, isAdmin: false }

@@ -41,7 +41,7 @@ export class ChatController {
 
             if (attributes.type === "private") {
                 const attrs = attributes as unknown as { type: "private"; name: string; memberId: number }
-                const withUser: CreateChatPrivateAttributes = { userId: req.user.id, name: attrs.name, type: "private", memberId: attrs.memberId }
+                const withUser: CreateChatPrivateAttributes = { userId: req.user.id, type: "private", memberId: attrs.memberId }
                 const created = await this.chatService.createChat(withUser)
                 res.json(created)
                 return
