@@ -12,7 +12,7 @@ export const GetTicketRequestSchema = z.object({
 export const CreateTicketRequestSchema = z.object({
     title: z.string(),
     description: z.string(),
-    type: z.enum(["payment","training","question"]).optional(),
+    type: z.enum(["payment","training","question","bug"]).optional(),
     createdById: z.number(),
     assignedToId: z.number().optional(),
     priority: z.enum(["low","medium","high"]).optional()

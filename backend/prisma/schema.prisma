@@ -119,6 +119,7 @@ enum TicketType {
   payment
   training
   question
+  bug
 }
 
 enum TicketStatus {
